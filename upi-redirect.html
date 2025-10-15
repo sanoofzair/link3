@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPI Payment Redirect</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 50px;
+}
+a.button {
+  background-color: #007a00;
+  color: white;
+  padding: 12px 24px;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 16px;
+}
+</style>
+</head>
+<body>
+<h2>Processing your UPI Payment...</h2>
+<p>If not redirected automatically, click below to continue.</p>
+<a id="upiLink" class="button" href="#">Open in UPI App</a>
+
+<script>
+// Read UPI ID from URL parameter (?pa=)
+const params = new URLSearchParams(window.location.search);
+const upiId = params.get("pa") || "afnasmnr@okhdfcbank";
+const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}`;
+const userAgent = navigator.userAgent.toLowerCase();
+const linkBtn = document.getElementById("upiLink");
+
+if (/android/.test(userAgent)) {
+  // Android – open UPI app
+  window.location.href = upiLink;
+} else if (/iphone|ipad|ipod/.test(userAgent)) {
+  // iPhone – fallback
+  linkBtn.href = "#";
+  linkBtn.textContent = "Copy UPI ID";
+  linkBtn.addEventListener("click", () => {
+    navigator.clipboard.writeText(upiId);
+    alert("UPI ID copied: " + upiId + "\nOpen your UPI app and paste to pay.");
+  });
+} else {
+  // Other devices
+  linkBtn.href = upiLink;
+}
+</script>
+</body>
+</html>
